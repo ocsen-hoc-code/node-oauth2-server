@@ -1,0 +1,23 @@
+{
+  "name": "node-oauth2-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ocsen-hoc-code/node-oauth2-server.git",
+  "author": "Do Lam Binh Minh <minhdlb@blockchainlabs.asia>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node -r esm src/index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.6.2",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.2.0"
+  }
+}

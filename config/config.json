@@ -1,0 +1,20 @@
+{
+  "development": {
+    "username": "ocsen",
+    "password": "ocsen-hoc-code",
+    "database": "ocsenDB",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "storage": ":memory:",
+    "dialect": "sqlite"
+  },
+  "production": {
+    "username": "ocsen",
+    "password": "ocsen-hoc-code",
+    "database": "ocsenDB",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
