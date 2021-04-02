@@ -1,34 +1,31 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('OAuthTokens', {
+    await queryInterface.createTable('OauthorizationCodes', {
       Id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID
       },
-      AccessToken: {
-        allowNull: true,
-        type: Sequelize.STRING,
-        unique: true
+      Code: {
+        allowNull: false,
+        type: Sequelize.STRING
       },
-      AccessTokenExpireAt: {
+      ExpiresAt: {
         allowNull: true,
         type: Sequelize.DATE
       },
-      RefreshToken: {
+      RedirectUri: {
         allowNull: true,
-        type: Sequelize.STRING,
-        unique: true
+        type: Sequelize.STRING
       },
-      RefreshTokenExpireAt: {
+      Scope: {
         allowNull: true,
-        type: Sequelize.DATE
+        type: Sequelize.STRING
       },
       UserId: {
         allowNull: false,
-        type: Sequelize.UUID,
-        unique: true
+        type: Sequelize.UUID
       },
       ClientId: {
         allowNull: false,
@@ -45,6 +42,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('OAuthTokens');
+    await queryInterface.dropTable('OauthorizationCodes');
   }
 };

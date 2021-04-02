@@ -1,38 +1,44 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('OAuthTokens', {
+    await queryInterface.createTable('OauthClients', {
       Id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID
       },
-      AccessToken: {
-        allowNull: true,
-        type: Sequelize.STRING,
-        unique: true
-      },
-      AccessTokenExpireAt: {
-        allowNull: true,
-        type: Sequelize.DATE
-      },
-      RefreshToken: {
-        allowNull: true,
-        type: Sequelize.STRING,
-        unique: true
-      },
-      RefreshTokenExpireAt: {
-        allowNull: true,
-        type: Sequelize.DATE
-      },
-      UserId: {
-        allowNull: false,
-        type: Sequelize.UUID,
-        unique: true
-      },
       ClientId: {
         allowNull: false,
+        type: Sequelize.STRING,
+        unique: true
+      },
+      SecretKey: {
+        allowNull: false,
         type: Sequelize.STRING
+      },
+      UserId: {
+        allowNull: true,
+        type: Sequelize.UUID
+      },
+      RedirectUris: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      Scope: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      Grants: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      AccessTokenLifetime: {
+        allowNull: true,
+        type: Sequelize.INTEGER
+      },
+      RefreshTokenLifetime: {
+        allowNull: true,
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -45,6 +51,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('OAuthTokens');
+    await queryInterface.dropTable('OauthClients');
   }
 };
