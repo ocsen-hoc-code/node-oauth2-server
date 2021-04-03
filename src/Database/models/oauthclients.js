@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   OauthClients.init({
-    Id: DataTypes.UUID,
+    Id: { type: DataTypes.UUID, primaryKey: true },
     ClientId: DataTypes.STRING,
     SecretKey: DataTypes.STRING,
     RedirectUris: DataTypes.STRING,
@@ -24,11 +24,11 @@ module.exports = (sequelize, DataTypes) => {
     RefreshTokenLifetime: DataTypes.INTEGER,
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     }
   }, {
     sequelize,

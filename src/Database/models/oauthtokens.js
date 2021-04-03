@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   OAuthTokens.init({
-    Id: DataTypes.UUID,
+    Id: { type: DataTypes.UUID, primaryKey: true },
     AccessToken: DataTypes.STRING,
     AccessTokenExpireAt: DataTypes.DATE,
     RefreshToken: DataTypes.STRING,
@@ -23,11 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     ClientId: DataTypes.STRING,
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     }
   }, {
     sequelize,

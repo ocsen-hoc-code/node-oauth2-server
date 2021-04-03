@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Users.init({
-    Id: DataTypes.UUID,
+    Id: { type: DataTypes.UUID, primaryKey: true },
     UserName: DataTypes.STRING,
     Password: DataTypes.STRING,
     Salt: DataTypes.STRING,
@@ -25,11 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     }
   }, {
     sequelize,
