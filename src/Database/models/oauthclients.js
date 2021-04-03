@@ -29,10 +29,14 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: {
       allowNull: false,
       type: DataTypes.DATE
+    },
+    deletedAt: {
+      type: DataTypes.DATE
     }
   }, {
     sequelize,
     modelName: 'OauthClients',
+    paranoid: true
   });
   return OauthClients;
 };

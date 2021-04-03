@@ -30,10 +30,14 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: {
       allowNull: false,
       type: DataTypes.DATE
+    },
+    deletedAt: {
+      type: DataTypes.DATE
     }
   }, {
     sequelize,
     modelName: 'Users',
+    paranoid: true
   });
   return Users;
 };
