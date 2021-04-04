@@ -5,11 +5,16 @@ export const Oauth2Model = (userServ) => {
     userService = userServ;
     return {
         getClient,
+        getAuthorizationCode,
         getUser,
+        getUserFromClient,
         getAccessToken,
         getRefreshToken,
+        saveAuthorizationCode,
         saveToken,
-        revokeToken
+        revokeToken,
+        revokeAuthorizationCode,
+        verifyScope
     }
 };
 
@@ -21,11 +26,27 @@ const getClient = (clientId, clientSecret, done) => {
     });
 }
 
+const getAuthorizationCode = (authorizationCode, done) => {
+    userService.getAuthorizationCode(authorizationCode).then((client) => {
+        done(client)
+    }).catch((ex) => {
+        done(null);
+    });
+}
+
 const getUser = (username, password, done) => {
     userService.getUser(username, password).then((user) => {
         done(null, user);
     }).catch((ex) => {
         done(ex.Error, null);
+    });
+}
+
+const getUserFromClient = (client, done) => {
+    userService.getUserFromClient(client).then((data) => {
+        done(data)
+    }).catch((ex) => {
+        done(null);
     });
 }
 
@@ -53,8 +74,32 @@ const saveToken = (token, client, user, done) => {
     });
 }
 
+const saveAuthorizationCode = (code, client, user, done) => {
+    userService.saveAuthorizationCode(code, client, user).then((data) => {
+        done(null, data);
+    }).catch((ex) => {
+        done(ex.Error, null);
+    });
+}
+
 const revokeToken = (token, done) => {
     userService.removeRefreshToken(token.refreshToken).then((data) => {
+        done(null, data);
+    }).catch((ex) => {
+        done(ex.Error, null);
+    });
+}
+
+const revokeAuthorizationCode = (code, done) => {
+    userService.revokeAuthorizationCode(code).then((data) => {
+        done(null, data);
+    }).catch((ex) => {
+        done(ex.Error, null);
+    });
+}
+
+const verifyScope = (token, scope, done) => {
+    userService.verifyScope(token, scope).then((data) => {
         done(null, data);
     }).catch((ex) => {
         done(ex.Error, null);
