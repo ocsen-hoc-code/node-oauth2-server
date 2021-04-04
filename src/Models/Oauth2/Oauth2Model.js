@@ -22,7 +22,7 @@ const getClient = (clientId, clientSecret, done) => {
     userService.getClient(clientId, clientSecret).then((client) => {
         done(client)
     }).catch((ex) => {
-        done(null);
+        done(ex.Error, null);
     });
 }
 
@@ -30,7 +30,7 @@ const getAuthorizationCode = (authorizationCode, done) => {
     userService.getAuthorizationCode(authorizationCode).then((client) => {
         done(client)
     }).catch((ex) => {
-        done(null);
+        done(ex.Error, null);
     });
 }
 
