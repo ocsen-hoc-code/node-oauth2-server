@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         isEmail: true
       }
     },
+    Scope: DataTypes.STRING,
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE

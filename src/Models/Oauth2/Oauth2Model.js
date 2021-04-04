@@ -13,18 +13,12 @@ export const Oauth2Model = (userServ) => {
     }
 };
 
-const getClient = (clientId, clientSecret) => {
-    for (const item of ClientAuthorization) {
-        if (item.ClientId == clientId && item.SecretKey == clientSecret) {
-            return {
-                clientId: item.ClientId,
-                secretKey: item.SecretKey,
-                grants: ['password', 'refresh_token']
-            }
-        }
-    }
-
-    return null;
+const getClient = (clientId, clientSecret, done) => {
+    userService.getClient(clientId, clientSecret).then((client) => {
+        done(client)
+    }).catch((ex) => {
+        done(null);
+    });
 }
 
 const getUser = (username, password, done) => {

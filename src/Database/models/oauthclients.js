@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     ClientId: DataTypes.STRING,
     SecretKey: DataTypes.STRING,
     RedirectUris: DataTypes.STRING,
+    UserId: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
     Scope: DataTypes.STRING,
     Grants: DataTypes.STRING,
     AccessTokenLifetime: DataTypes.INTEGER,
