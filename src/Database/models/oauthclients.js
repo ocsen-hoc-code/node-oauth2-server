@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   OauthClients.init({
     Id: { type: DataTypes.UUID, primaryKey: true },
     ClientId: DataTypes.STRING,
-    SecretKey: DataTypes.STRING,
+    ClientSecret: DataTypes.STRING,
     RedirectUris: DataTypes.STRING,
     UserId: {
       type: DataTypes.UUID,

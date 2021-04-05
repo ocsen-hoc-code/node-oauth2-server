@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
-      AccessTokenExpireAt: {
+      AccessTokenExpiresAt: {
         allowNull: true,
         type: Sequelize.DATE
       },
@@ -21,14 +21,13 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
-      RefreshTokenExpireAt: {
+      RefreshTokenExpiresAt: {
         allowNull: true,
         type: Sequelize.DATE
       },
       UserId: {
         allowNull: false,
         type: Sequelize.UUID,
-        unique: true
       },
       ClientId: {
         allowNull: false,

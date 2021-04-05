@@ -10,28 +10,31 @@ class UserService {
     getClient(clientId, clientSecret) {
         return new Promise(async (resolve, reject) => {
             try {
-                let client = await db.OauthClients.findOne({
+                let client = await this.db.OauthClients.findOne({
                     where: {
                         ClientId: clientId,
-                        clientSecret: clientSecret
+                        ClientSecret: clientSecret
                     },
                     raw: true
                 });
+
                 if (client) {
                     let grants = client.Grants ? client.Grants.replaceAll(' ', '') : null;
                     grants = grants ? grants.split(',') : null;
 
                     resolve({
-                        id: client.Id,
+                        id: client.ClientId,
                         userId: client.UserId,
                         redirectUris: client.RedirectUris,
                         grants: grants,
                         accessTokenLifetime: client.AccessTokenLifetime,
                         refreshTokenLifetime: client.RefreshTokenLifetime
                     });
+                } else {
+                    resolve(false);
                 }
-                resolve(null);
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -72,9 +75,11 @@ class UserService {
                         user: user,
                         scope: user.scope
                     });
+                } else {
+                    resolve(false);
                 }
-                resolve(null);
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -83,19 +88,24 @@ class UserService {
     getUser(username, password) {
         return new Promise(async (resolve, reject) => {
             try {
-                let user = await db.Users.findOne({ where: { UserName: username }, raw: true });
+                let user = await this.db.Users.findOne({ where: { UserName: username }, raw: true });
                 if (user) {
-                    let currentPassword = getPassword(password, user.Salt);
+                    let currentPassword = await getPassword(password, user.Salt);
+
                     if (currentPassword == user.Password) {
                         resolve({
                             id: user.Id,
                             userName: user.UserName,
                             email: user.Email
                         });
+                    } else {
+                        resolve(false);
                     }
+                } else {
+                    resolve(false);
                 }
-                resolve(null);
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -131,9 +141,11 @@ class UserService {
                         refreshToken: oauth2Token.RefreshToken,
                         refreshTokenExpiresAt: oauth2Token.RefreshTokenExpiresAt,
                     });
+                } else {
+                    resolve(false);
                 }
-                resolve(null);
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -169,9 +181,11 @@ class UserService {
                         refreshToken: oauth2Token.RefreshToken,
                         refreshTokenExpiresAt: oauth2Token.RefreshTokenExpiresAt,
                     });
+                } else {
+                    resolve(false);
                 }
-                resolve(null);
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -187,9 +201,11 @@ class UserService {
                         userName: user.UserName,
                         email: user.Email
                     });
+                } else {
+                    resolve(false);
                 }
-                resolve(null);
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -228,6 +244,7 @@ class UserService {
                     user: user
                 });
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -236,6 +253,7 @@ class UserService {
     saveToken(token, client, user) {
         return new Promise(async (resolve, reject) => {
             try {
+
                 let data = {
                     ClientId: client.id,
                     UserId: user.id,
@@ -246,19 +264,20 @@ class UserService {
                     updatedAt: new Date()
                 };
 
-                let oldToken = await db.OAuthTokens.findOne({
+                let oldToken = await this.db.OAuthTokens.findOne({
                     where: {
                         ClientId: client.id,
                         UserId: user.id,
-                    }, raw: true
+                    }
                 });
 
                 if (oldToken) {
-                    await db.OAuthTokens.update(data, { Id: oldToken.Id });
+                    await this.db.OAuthTokens.update(data, { where: { Id: oldToken.Id } });
                 } else {
                     data.createdAt = data.updatedAt;
                     data.Id = uuidv4();
-                    await db.OAuthTokens.create(data);
+
+                    await this.db.OAuthTokens.create(data);
                 }
 
                 resolve({
@@ -267,10 +286,11 @@ class UserService {
                     refreshToken: token.refreshToken,
                     refreshTokenExpiresAt: token.refreshTokenExpiresAt,
                     scope: user.scope,
-                    client: { id: accessToken.client_id },
-                    user: { id: accessToken.user_id }
+                    client: client,
+                    user: user
                 });
             } catch (error) {
+                console.log(error);
                 reject(error);
             }
         });
@@ -278,16 +298,23 @@ class UserService {
 
     removeRefreshToken(token) {
         return new Promise(async (resolve, reject) => {
-            db.Users.update({
+            this.db.Users.update({
                 where: { RefreshToken: token.refreshToken }
             }).then((oauth2Token) => {
                 if (oauth2Token) {
                     oauth2Token.AccessToken = null;
                     oauth2Token.RefreshToken = null;
-                    oauth2Token.save();
+                    oauth2Token.save().then(data => {
+                        resolve(!!data);
+                    }).catch(error => {
+                        console.log(error);
+                        reject(error);
+                    });
+                } else {
+                    resolve(false);
                 }
-                resolve(!!oauth2Token);
             }).catch((error) => {
+                console.log(error);
                 reject(error);
             });
         });
@@ -295,15 +322,22 @@ class UserService {
 
     revokeAuthorizationCode(code) {
         return new Promise(async (resolve, reject) => {
-            db.OauthorizationCodes.findOne({
+            this.db.OauthorizationCodes.findOne({
                 where: { Code: code.code }
-            }).then((data) => {
-                if (data) {
-                    data.Code = null;
-                    data.save();
+            }).then((authorizationCode) => {
+                if (authorizationCode) {
+                    authorizationCode.Code = null;
+                    authorizationCode.save().then(data => {
+                        resolve(!!data);
+                    }).catch(error => {
+                        console.log(error);
+                        reject(error);
+                    });
+                } else {
+                    resolve(false);
                 }
-                resolve(!!data);
             }).catch((error) => {
+                console.log(error);
                 reject(error);
             });
         });

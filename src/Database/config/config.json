@@ -10,11 +10,13 @@
       "min": 0,
       "acquire": 30000,
       "idle": 10000
-    }
+    },
+    "logging": false
   },
   "test": {
     "storage": ":memory:",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "logging": false
   },
   "production": {
     "username": "ocsen",
@@ -27,6 +29,7 @@
       "min": 0,
       "acquire": 30000,
       "idle": 10000
-    }
+    },
+    "logging": false
   }
 }

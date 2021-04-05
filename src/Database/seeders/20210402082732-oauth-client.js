@@ -6,19 +6,19 @@ module.exports = {
     await queryInterface.bulkInsert('OauthClients', [{
       Id: uuidv4(),
       ClientId: 'ocsen-simple',
-      SecretKey: 'ocsen-hoc-code',
+      ClientSecret: 'ocsen-hoc-code',
       Grants: 'password, refresh_token',
-      AccessTokenLifetime: 18000,
-      RefreshTokenLifetime: 36000,
+      AccessTokenLifetime: 1800,
+      RefreshTokenLifetime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
       Id: uuidv4(),
       ClientId: 'ocsen-with-password',
-      SecretKey: 'ocsen-hoc-code',
+      ClientSecret: 'ocsen-hoc-code',
       Grants: 'password',
-      AccessTokenLifetime: 18000,
-      RefreshTokenLifetime: 36000,
+      AccessTokenLifetime: 1800,
+      RefreshTokenLifetime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});

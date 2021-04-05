@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
-      SecretKey: {
+      ClientSecret: {
         allowNull: false,
         type: Sequelize.STRING
       },

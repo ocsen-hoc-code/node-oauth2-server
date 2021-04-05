@@ -11,6 +11,7 @@ module.exports = {
       Password: await crypto.scryptSync('dolambinhminh', salt, 32).toString('hex'),
       Email: 'dolambinhminh@yahoo.com',
       Salt: salt,
+      Scope: 'serect-api,test-api',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
