@@ -14,16 +14,27 @@ Data request `Content-Type: application/x-www-form-urlencoded`
 
 `{
    Authorization:Basic b2NzZW4tc2ltcGxlOm9jc2VuLWhvYy1jb2Rl
+
    username:dolambinhminh
+
    password:dolambinhminh
+
    grant_type:password
+
 }`
 
 or
 
 `{
    Authorization:Basic b2NzZW4td2l0aC1wYXNzd29yZDpvY3Nlbi1ob2MtY29kZQ==
+
    username:dolambinhminh
+
    password:dolambinhminh
+
    grant_type:password
+
 }`
+
+
+Test link: `http://127.0.0.1:8888/test-api` and `http://127.0.0.1:8888/no-permision`
