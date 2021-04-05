@@ -98,9 +98,10 @@ const revokeAuthorizationCode = (code, done) => {
 }
 
 const verifyScope = (token, scope, done) => {
-    userService.verifyScope(token, scope).then((data) => {
+    try {
+        const data = userService.verifyScope(token, scope);
         done(null, data);
-    }).catch((ex) => {
+    } catch (error) {
         done(ex.Error, false);
-    });
+    }
 }

@@ -1,7 +1,7 @@
 import { UUID } from 'sequelize';
 import { getPassword } from '../../Utils';
 import { v4 as uuidv4 } from 'uuid';
-class UserService {
+class Oauth2Service {
     db = null;
     constructor(injectDB) {
         this.db = injectDB;
@@ -43,7 +43,7 @@ class UserService {
     getAuthorizationCode(authorizationCode) {
         return new Promise(async (resolve, reject) => {
             try {
-                let oauthCode = await db.OauthorizationCodes.findOne({
+                let oauthCode = await this.db.OauthorizationCodes.findOne({
                     where: {
                         Code: authorizationCode
                     },
@@ -51,19 +51,19 @@ class UserService {
                 });
                 if (oauthCode) {
                     let result = await Promise.all([
-                        db.Users.findOne({
+                        this.db.Users.findOne({
                             where: { UserId: oauthCode.UserId },
                             attributes: [Id, UserName, Email, Scope],
                             raw: true
                         }),
-                        db.OauthClients.findOne({ where: { ClientId: oauthCode.ClientId }, raw: true }),
+                        this.db.OauthClients.findOne({ where: { ClientId: oauthCode.ClientId }, raw: true }),
                     ]);
 
                     let user = result[0] ? {
                         id: result[0].Id,
                         userName: result[0].UserName,
                         email: result[0].Email,
-                        scope: result[0].Scope
+                        scope: this.arrayConvert(result[0].Scope)
                     } : null;
                     let client = result[1] ? { id: result[1].ClientId } : null;
 
@@ -114,32 +114,33 @@ class UserService {
     getAccessToken(accessToken) {
         return new Promise(async (resolve, reject) => {
             try {
-                let oauth2Token = await db.OAuthTokens.findOne({ where: { AccessToken: accessToken } });
+                let oauth2Token = await this.db.OAuthTokens.findOne({ where: { AccessToken: accessToken } });
                 if (oauth2Token) {
                     let result = await Promise.all([
-                        db.Users.findOne({
-                            where: { UserId: oauth2Token.UserId },
-                            attributes: [Id, UserName, Email, Scope],
+                        this.db.Users.findOne({
+                            where: { Id: oauth2Token.UserId },
+                            attributes: ['Id', 'UserName', 'Email', 'Scope'],
                             raw: true
                         }),
-                        db.OauthClients.findOne({ where: { ClientId: oauth2Token.ClientId }, raw: true }),
+                        this.db.OauthClients.findOne({ where: { ClientId: oauth2Token.ClientId }, raw: true }),
                     ]);
 
                     let user = result[0] ? {
                         id: result[0].Id,
                         userName: result[0].UserName,
                         email: result[0].Email,
-                        scope: result[0].Scope
+                        scope: this.arrayConvert(result[0].Scope)
                     } : null;
                     let client = result[1] ? { id: result[1].ClientId } : null;
+
                     resolve({
                         client: client,
                         user: user,
                         scope: user.scope,
                         accessToken: oauth2Token.AccessToken,
-                        accessTokenExpiresAt: oauth2Token.AccessTokenExpiresAt,
+                        accessTokenExpiresAt: new Date(oauth2Token.AccessTokenExpiresAt),
                         refreshToken: oauth2Token.RefreshToken,
-                        refreshTokenExpiresAt: oauth2Token.RefreshTokenExpiresAt,
+                        refreshTokenExpiresAt: new Date(oauth2Token.RefreshTokenExpiresAt),
                     });
                 } else {
                     resolve(false);
@@ -154,22 +155,22 @@ class UserService {
     getRefreshToken(refreshToken) {
         return new Promise(async (resolve, reject) => {
             try {
-                let oauth2Token = await db.OAuthTokens.findOne({ where: { RefreshToken: refreshToken } });
+                let oauth2Token = await this.db.OAuthTokens.findOne({ where: { RefreshToken: refreshToken } });
                 if (oauth2Token) {
                     let result = await Promise.all([
-                        db.Users.findOne({
-                            where: { UserId: oauth2Token.UserId, Scope },
-                            attributes: [Id, UserName, Email],
+                        this.db.Users.findOne({
+                            where: { Id: oauth2Token.UserId, Scope },
+                            attributes: ['Id', 'UserName', 'Email', 'Scope'],
                             raw: true
                         }),
-                        db.OauthClients.findOne({ where: { ClientId: oauth2Token.ClientId }, raw: true }),
+                        this.db.OauthClients.findOne({ where: { ClientId: oauth2Token.ClientId }, raw: true }),
                     ]);
 
                     let user = result[0] ? {
                         id: result[0].Id,
                         userName: result[0].UserName,
                         email: result[0].Email,
-                        scope: result[0].Scope
+                        scope: this.arrayConvert(result[0].Scope)
                     } : null;
                     let client = result[1] ? { id: result[1].ClientId } : null;
                     resolve({
@@ -177,9 +178,9 @@ class UserService {
                         user: user,
                         scope: user.scope,
                         accessToken: oauth2Token.AccessToken,
-                        accessTokenExpiresAt: oauth2Token.AccessTokenExpiresAt,
+                        accessTokenExpiresAt: new Date(oauth2Token.AccessTokenExpiresAt),
                         refreshToken: oauth2Token.RefreshToken,
-                        refreshTokenExpiresAt: oauth2Token.RefreshTokenExpiresAt,
+                        refreshTokenExpiresAt: new Date(oauth2Token.RefreshTokenExpiresAt),
                     });
                 } else {
                     resolve(false);
@@ -194,7 +195,7 @@ class UserService {
     getUserFromClient(client) {
         return new Promise(async (resolve, reject) => {
             try {
-                let user = await db.Users.findOne({ where: { Id: client.userId }, raw: true });
+                let user = await this.db.Users.findOne({ where: { Id: client.userId }, raw: true });
                 if (user) {
                     resolve({
                         id: user.Id,
@@ -222,18 +223,18 @@ class UserService {
                     RedirectUri: code.redirectUri,
                     updatedAt: new Date()
                 };
-                let oauthorizationCode = await db.OauthorizationCodes.findOne({
+                let oauthorizationCode = await this.db.OauthorizationCodes.findOne({
                     where: {
                         ClientId: client.id,
                         UserId: user.id,
                     }, raw: true
                 });
                 if (oauthorizationCode) {
-                    await db.OauthorizationCodes.update(data, { Id: oauthorizationCode.Id });
+                    await this.db.OauthorizationCodes.update(data, { Id: oauthorizationCode.Id });
                 } else {
                     data.createdAt = data.updatedAt;
                     data.Id = uuidv4();
-                    await db.OauthorizationCodes.create(data);
+                    await this.db.OauthorizationCodes.create(data);
                 }
                 resolve({
                     authorizationCode: code.Code,
@@ -258,9 +259,9 @@ class UserService {
                     ClientId: client.id,
                     UserId: user.id,
                     AccessToken: token.accessToken,
-                    AccessTokenExpiresAt: token.AccessTokenExpiresAt,
+                    AccessTokenExpiresAt: token.accessTokenExpiresAt,
                     RefreshToken: token.refreshToken,
-                    RefreshTokenExpiresAt: token.RefreshTokenExpiresAt,
+                    RefreshTokenExpiresAt: token.refreshTokenExpiresAt,
                     updatedAt: new Date()
                 };
 
@@ -344,20 +345,26 @@ class UserService {
     }
 
     verifyScope(token, scope) {
-        if (undefined == scope || 0 == scope.lenght) {
-            return true;
-        }
-
         if (!token.scope) {
             return false;
         }
 
-        let requestedScopes = scope.replaceAll(' ', '');
-        requestedScopes = scope.split(',');
-        let authorizedScopes = token.scope.replaceAll(' ', '');
-        authorizedScopes = token.scope.split(',');
-        return requestedScopes.some(s => authorizedScopes.indexOf(s) >= 0);
+        if (undefined == scope || 0 == scope.lenght) {
+            return true;
+        }
+
+        let authorizedScopes = token.scope;
+        return scope.some(s => authorizedScopes.indexOf(s) > -1);
+    }
+
+    arrayConvert(data) {
+        if (!data) {
+            return null;
+        }
+
+        data = data.replaceAll(' ', '').split(',');
+        return data;
     }
 }
 
-export default UserService;
+export default Oauth2Service;
